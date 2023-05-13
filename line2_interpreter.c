@@ -12,8 +12,7 @@
 
 void display_prompt(void)
 {
-char prompt[] = "#cisfun$ ";
-write(STDOUT_FILENO, prompt, sizeof(prompt) - 1);
+write(STDOUT_FILENO, "#CISFUN$ ", 9);
 }
 
 /**
@@ -71,10 +70,12 @@ else if (pid == 0) /* Child process */
 char full_command[MAX_COMMAND_LENGTH];
 snprintf(full_command, MAX_COMMAND_LENGTH, "/bin/%s", command);
 
+char *args[] = {full_command, line, NULL};
+char **env = environ;
 /* Execute the command */
-if (execlp(full_command, line, (char *)NULL) == -1)
+if (execve(full_command, args, env) == -1)
 {
-perror("execlp error");
+perror("execve error");
 exit(EXIT_FAILURE);
 }
 }
@@ -86,9 +87,8 @@ waitpid(pid, &status, 0);
 /* Print an error message if the command was not found */
 if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 {
-char err_message[MAX_COMMAND_LENGTH];
-snprintf(err_message, MAX_COMMAND_LENGTH, "%s: command not found\n", command);
-write(STDOUT_FILENO, err_message, strlen(err_message));
+write(STDOUT_FILENO, command, strlen(command));
+write(STDOUT_FILENO, ": command not fund\n", 20);
 }
 }
 }
