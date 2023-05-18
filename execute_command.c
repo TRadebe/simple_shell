@@ -8,14 +8,49 @@
  */
 int execute_command(char *command)
 {
-	pid_t pid;
-	int status;
-	char *full_path;
 	char **args;
-	int argc = 0, i;
-	const char *delim = " \t\n";
+	pid_t pid;
 
-	/* Check for built-in commands */
+	args = parse_arguments(command);
+	if (args == NULL)
+	{
+		return (-1);
+	}
+
+	pid = fork();
+	if (pid == -1)
+	{
+		free(args);
+		return (-1);
+	}
+	else if (pid == 0)
+	{
+		char *full_path = find_full_path(args[0]);
+
+		if (full_path == NULL)
+		{
+			fprintf(stderr, "%s: command not found\n", args[0]);
+			exit(127);
+		}
+		execute_child_process(full_path, args);
+	}
+	else
+	{
+		wait_for_child_process(pid);
+	}
+
+	free(args);
+	return (0);
+}
+
+/**
+ * execute_builtin_command - Execute a built-in shell command
+ * @command: A null-terminated string containing the command
+ *
+ * Return: 0 on success, -1 on failure
+ */
+int execute_builtin_command(char *command)
+{
 	if (my_strcmp(command, "exit") == 0)
 	{
 		exit_shell();
@@ -26,16 +61,29 @@ int execute_command(char *command)
 		env_shell();
 		return (0);
 	}
+	return (-1);
+}
 
-	/* count number of arguments */
+/**
+ * parse_arguments - Parse the command into arguments
+ * @command: A null-terminated string containing the command
+ *
+ * Return: An array of null-terminated strings representing the arguments
+ */
+char **parse_arguments(char *command)
+{
+	int argc;
+	char **args;
+	int i;
+	const char *delim = " \t\n";
+
 	argc = count_arguments(command, " \t\n");
-    /* cast to (void) to silence unused variable warnings */
-	(void)argc;
 	args = malloc((argc + 1) * sizeof(char *));
 	if (args == NULL)
-		return (-1);
+	{
+		return (NULL);
+	}
 
-	/* parse command and arguments */
 	i = 0;
 	args[i] = strtok(command, delim);
 	while (args[i] != NULL)
@@ -45,39 +93,34 @@ int execute_command(char *command)
 	}
 	args[i] = NULL;
 
-	pid = fork();
-	if (pid == -1)
-	{
-		free(args);
-		return (-1);
-	}
-	else if (pid == 0)
-	{
-		/* Child process */
-		full_path = find_full_path(args[0]);
-			if (full_path == NULL)
-			{
-				fprintf(stderr, "%s: command not found\n", args[0]);
-				exit(127);
-			}
-			else
-			{
-				execve(full_path, args, environ);
-				perror("execve");
-				free(full_path);
-				exit(EXIT_FAILURE);
-			}
-	}
-	else
-	{
-		/* Parent process */
-		while (wait(&status) != pid)
-		{
-		}
-	}
-
-	free(args);
-	return (0);
+	return (args);
 }
 
+/**
+ * execute_child_process - Execute the child process
+ * @full_path: The full path of the command to be executed
+ * @args: An array of null-terminated strings
+ * representing the command arguments
+ */
+void execute_child_process(char *full_path, char **args)
+{
+	execve(full_path, args, environ);
+	perror("execve");
+	free(full_path);
+	exit(EXIT_FAILURE);
+}
+
+/**
+ * wait_for_child_process - Wait for the child process to complete
+ * @pid: The process ID of the child process
+ */
+void wait_for_child_process(pid_t pid)
+{
+	int status;
+
+	while (wait(&status) != pid)
+	{
+		/* Wait for the child process to complete */
+	}
+}
 

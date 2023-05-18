@@ -17,7 +17,7 @@ int main(void)
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "#cisfun$ ", 9);
 
-		chars_read = getline(&command, &command_len, stdin);
+		chars_read = my_getline(&command, &command_len);
 		if (chars_read == -1)
 			break;
 
