@@ -51,10 +51,22 @@ int execute_command(char *command)
  */
 int execute_builtin_command(char *command)
 {
-	if (my_strcmp(command, "exit") == 0)
+	if (my_strncmp(command, "exit", 4) == 0)
 	{
-		exit_shell();
-		return (0);
+		if (command[4] == '\n' || command[4] == '\0' || command[4] == ' ')
+		{
+			if (command[4] == ' ')
+			{
+				int exitStatus = atoi(command + 5);
+
+				exit_shell_with_status(exitStatus);
+			}
+			else
+			{
+				exit_shell();
+			}
+			return (0);
+		}
 	}
 	else if (my_strcmp(command, "env") == 0)
 	{

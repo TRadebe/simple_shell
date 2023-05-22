@@ -11,6 +11,19 @@ int exit_shell(void)
 }
 
 /**
+ * exit_shell_with_status - Exit the shell with a specified status
+ * @exitStatus: The exit status to be returned by the shell
+ *
+ * Exits the shell with the specified exit status.
+ *
+ * @exitStatus: The exit status value to be returned
+ */
+void exit_shell_with_status(int exitStatus)
+{
+	exit(exitStatus);
+}
+
+/**
  * env_shell - Print the current environment
  *
  * Return: None
@@ -50,6 +63,29 @@ int my_strcmp(const char *s1, const char *s2)
 		s1++;
 		s2++;
 	}
+	return ((int)(*s1 - *s2));
+}
+
+/**
+ * my_strncmp - Compare two strings up to a specified length
+ * @s1: Pointer to the first string
+ * @s2: Pointer to the second string
+ * @n: Maximum number of characters to compare
+ *
+ * Compare two strings `s1` and `s2` up to length `n`.
+ *
+ * Return: Difference between the first differing characters or 0 if equal
+ */
+int my_strncmp(const char *s1, const char *s2, size_t n)
+{
+	while (n > 0 && *s1 && *s2 && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+		n--;
+	}
+	if (n == 0)
+		return (0);
 	return ((int)(*s1 - *s2));
 }
 
