@@ -13,9 +13,10 @@
 #define BUFFER_SIZE 1024
 
 extern char **environ;
+extern char **argv;
 
 /* function declarations */
-int execute_command(char *command);
+int execute_command(char *command, char *program_name);
 char *find_full_path(char *command);
 void print_error(char *command, char *error_message);
 int exit_shell(void);

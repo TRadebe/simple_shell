@@ -3,13 +3,14 @@
 /**
  * execute_command - Execute a command with arguments
  * @command: A null-terminated string containing the command and its arguments
+ * @program_name: The program name (argv[0])
  *
  * Return: 0 on success, -1 on failure
  */
-int execute_command(char *command)
+int execute_command(char *command, char *program_name)
 {
-	char **args;
 	pid_t pid;
+	char **args;
 
 	args = parse_arguments(command);
 	if (args == NULL)
@@ -29,7 +30,7 @@ int execute_command(char *command)
 
 		if (full_path == NULL)
 		{
-			fprintf(stderr, "%s: No such file or directory\n", args[0]);
+			fprintf(stderr, "%s: %d: %s:  not found\n", program_name, 1,  args[0]);
 			exit(127);
 		}
 		execute_child_process(full_path, args);
