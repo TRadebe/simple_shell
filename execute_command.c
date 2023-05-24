@@ -29,7 +29,7 @@ int execute_command(char *command)
 
 		if (full_path == NULL)
 		{
-			fprintf(stderr, "%s: command not found\n", args[0]);
+			fprintf(stderr, "%s: No such file or directory\n", args[0]);
 			exit(127);
 		}
 		execute_child_process(full_path, args);
