@@ -119,6 +119,7 @@ void execute_child_process(char *full_path, char **args)
 	execve(full_path, args, environ);
 	perror("execve");
 	free(full_path);
+	exit(EXIT_FAILURE);
 }
 
 /**
